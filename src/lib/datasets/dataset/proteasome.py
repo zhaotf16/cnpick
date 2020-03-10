@@ -31,6 +31,11 @@ class PROTEASOME(data.Dataset):
         self.annot_path = os.path.join(
           self.data_dir, 'annotations', 
           'train.json')
+      if split == 'test':
+        self.annot_path = os.path.join(
+          self.data_dir, 'annotations',
+          'test.json'
+        )
       else:
         self.annot_path = os.path.join(
           self.data_dir, 'annotations', 
