@@ -43,6 +43,8 @@ class Debugger(object):
         (255, 0, 0), (0, 0, 255)]
     elif num_classes == 80 or dataset == 'coco':
       self.names = coco_class_name
+    elif num_classes == 1 or dataset == 'proteasome':
+      self.names = proteasome_class_name
     elif num_classes == 20 or dataset == 'pascal':
       self.names = pascal_class_name
     elif dataset == 'gta':
@@ -434,6 +436,10 @@ kitti_class_name = [
 
 gta_class_name = [
   'p', 'v'
+]
+
+proteasome_class_name = [
+  'proteasome'
 ]
 
 pascal_class_name = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", 

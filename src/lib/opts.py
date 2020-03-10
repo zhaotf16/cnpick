@@ -12,8 +12,8 @@ class opts(object):
     # basic experiment setting
     self.parser.add_argument('task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
-    self.parser.add_argument('--dataset', default='coco',
-                             help='coco | kitti | coco_hp | pascal')
+    self.parser.add_argument('--dataset', default='proteasome',
+                             help='coco | kitti | coco_hp | pascal | proteasome')
     self.parser.add_argument('--exp_id', default='default')
     self.parser.add_argument('--test', action='store_true')
     self.parser.add_argument('--debug', type=int, default=0,
@@ -335,15 +335,15 @@ class opts(object):
 
   def init(self, args=''):
     default_dataset_info = {
-      'ctdet': {'default_resolution': [512, 512], 'num_classes': 80, 
-                'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
-                'dataset': 'coco'},
+      'ctdet': {'default_resolution': [2048, 2048], 'num_classes': 1, 
+                'mean': [0.502, 0.502, 0.502], 'std': [0.307, 0.307, 0.307],
+                'dataset': 'proteasome'},
       'exdet': {'default_resolution': [512, 512], 'num_classes': 80, 
                 'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
                 'dataset': 'coco'},
       'multi_pose': {
         'default_resolution': [512, 512], 'num_classes': 1, 
-        'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
+        'mean': [0.502, 0.502, 0.502], 'std': [0.289, 0.274, 0.278],
         'dataset': 'coco_hp', 'num_joints': 17,
         'flip_idx': [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], 
                      [11, 12], [13, 14], [15, 16]]},
