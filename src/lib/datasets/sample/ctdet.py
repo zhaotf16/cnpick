@@ -45,7 +45,6 @@ class CTDetDataset(data.Dataset):
     else:
       s = max(img.shape[0], img.shape[1]) * 1.0
       input_h, input_w = self.opt.input_h, self.opt.input_w
-    
     flipped = False
     if self.split == 'train':
       if not self.opt.not_rand_crop:
@@ -77,7 +76,6 @@ class CTDetDataset(data.Dataset):
       color_aug(self._data_rng, inp, self._eig_val, self._eig_vec)
     inp = (inp - self.mean) / self.std
     inp = inp.transpose(2, 0, 1)
-
     output_h = input_h // self.opt.down_ratio
     output_w = input_w // self.opt.down_ratio
     num_classes = self.num_classes
@@ -125,7 +123,6 @@ class CTDetDataset(data.Dataset):
           draw_dense_reg(dense_wh, hm.max(axis=0), ct_int, wh[k], radius)
         gt_det.append([ct[0] - w / 2, ct[1] - h / 2, 
                        ct[0] + w / 2, ct[1] + h / 2, 1, cls_id])
-    
     ret = {'input': inp, 'hm': hm, 'reg_mask': reg_mask, 'ind': ind, 'wh': wh}
     if self.opt.dense_wh:
       hm_a = hm.max(axis=0, keepdims=True)

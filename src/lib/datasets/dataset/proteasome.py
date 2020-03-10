@@ -35,11 +35,11 @@ class PROTEASOME(data.Dataset):
         self.annot_path = os.path.join(
           self.data_dir, 'annotations', 
           'train.json')
-    self.max_objs = 128
+    self.max_objs = 1500
     self.class_name = [
       '__background__', 'proteasome']
     self._valid_ids = [
-      0, 1]
+      1]
     self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
     self.voc_color = [(v // 32 * 64 + 64, (v // 8) % 4 * 64, v % 8 * 32) \
                       for v in range(1, self.num_classes + 1)]
