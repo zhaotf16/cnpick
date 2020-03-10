@@ -47,6 +47,8 @@ class Debugger(object):
       self.names = proteasome_class_name
     elif num_classes == 20 or dataset == 'pascal':
       self.names = pascal_class_name
+    elif num_classes == 1 or dataset == 'proteasome_512':
+      self.names = proteasome_512_class_name
     elif dataset == 'gta':
       self.names = gta_class_name
       self.focal_length = 935.3074360871937
@@ -439,6 +441,10 @@ gta_class_name = [
 ]
 
 proteasome_class_name = [
+  'proteasome'
+]
+
+proteasome_512_class_name = [
   'proteasome'
 ]
 

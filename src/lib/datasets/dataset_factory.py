@@ -19,6 +19,7 @@ dataset_factory = {
   'kitti': KITTI,
   'coco_hp': COCOHP,
   'proteasome': PROTEASOME
+  'proteasome_512': PROTEASOME_512
 }
 
 _sample_factory = {
