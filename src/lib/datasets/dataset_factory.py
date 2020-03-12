@@ -12,13 +12,14 @@ from .dataset.pascal import PascalVOC
 from .dataset.kitti import KITTI
 from .dataset.coco_hp import COCOHP
 from .dataset.proteasome import PROTEASOME
+from .dataset.proteasome_512 import PROTEASOME_512
 
 dataset_factory = {
   'coco': COCO,
   'pascal': PascalVOC,
   'kitti': KITTI,
   'coco_hp': COCOHP,
-  'proteasome': PROTEASOME
+  'proteasome': PROTEASOME,
   'proteasome_512': PROTEASOME_512
 }
 
