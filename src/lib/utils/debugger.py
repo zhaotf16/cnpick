@@ -43,12 +43,16 @@ class Debugger(object):
         (255, 0, 0), (0, 0, 255)]
     elif num_classes == 80 or dataset == 'coco':
       self.names = coco_class_name
-    elif num_classes == 1 or dataset == 'proteasome':
+    elif dataset == 'proteasome':
       self.names = proteasome_class_name
     elif num_classes == 20 or dataset == 'pascal':
       self.names = pascal_class_name
-    elif num_classes == 1 or dataset == 'proteasome_512':
+    elif dataset == 'proteasome_512':
       self.names = proteasome_512_class_name
+    elif dataset == 'GspDvc_512':
+      self.names = GspDvc_class_names
+    elif dataset == 'TrpV1':
+      self.names = TrpV1_class_names
     elif dataset == 'gta':
       self.names = gta_class_name
       self.focal_length = 935.3074360871937
@@ -447,6 +451,14 @@ proteasome_class_name = [
 
 proteasome_512_class_name = [
   'proteasome'
+]
+
+GspDvc_class_names = [
+  'GspDvc'
+]
+
+TrpV1_class_names = [
+  'TrpV1'
 ]
 
 pascal_class_name = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", 

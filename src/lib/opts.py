@@ -12,8 +12,9 @@ class opts(object):
     # basic experiment setting
     self.parser.add_argument('task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
-    self.parser.add_argument('--dataset', default='proteasome_512',
-                             help='coco | kitti | coco_hp | pascal | proteasome | proteasome_512')
+    self.parser.add_argument('--dataset', default='GspDvc_512',
+                             help='coco | kitti | coco_hp | pascal'
+                              '| proteasome | proteasome_512 | GspDvc_512 | TrpV1_512')
     self.parser.add_argument('--exp_id', default='default')
     self.parser.add_argument('--test', action='store_true')
     self.parser.add_argument('--debug', type=int, default=0,
@@ -336,7 +337,7 @@ class opts(object):
   def init(self, args=''):
     default_dataset_info = {
       'ctdet': {'default_resolution': [512, 512], 'num_classes': 1, 
-                'mean': [0.591, 0.591, 0.591], 'std': [0.292, 0.292, 0.292],
+                'mean': [0.544, 0.544, 0.544], 'std': [0.103, 0.103, 0.103],
                 'dataset': 'proteasome'},
       'exdet': {'default_resolution': [512, 512], 'num_classes': 80, 
                 'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
