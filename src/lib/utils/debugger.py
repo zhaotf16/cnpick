@@ -183,8 +183,9 @@ class Debugger(object):
     txt = '{}{:.1f}'.format(self.names[cat], conf)
     font = cv2.FONT_HERSHEY_SIMPLEX
     cat_size = cv2.getTextSize(txt, font, 0.5, 2)[0]
+    c = (255, 0, 0)
     cv2.rectangle(
-      self.imgs[img_id], (bbox[0], bbox[1]), (bbox[2], bbox[3]), c, 2)
+      self.imgs[img_id], (bbox[0], bbox[1]), (bbox[2], bbox[3]), c, 1)
     if show_txt:
       cv2.rectangle(self.imgs[img_id],
                     (bbox[0], bbox[1] - cat_size[1] - 2),
