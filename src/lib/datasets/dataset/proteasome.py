@@ -13,7 +13,7 @@ import torch.utils.data as data
 
 class PROTEASOME(data.Dataset):
   num_classes = 1
-  default_resolution = [2048, 2048]
+  default_resolution = [1024, 1024]
   mean = np.array([0.502271, 0.502271, 0.502271],
                    dtype=np.float32).reshape(1, 1, 3)
   std  = np.array([0.307421, 0.307421, 0.307421],
@@ -21,7 +21,7 @@ class PROTEASOME(data.Dataset):
 
   def __init__(self, opt, split):
     super(PROTEASOME, self).__init__()
-    self.data_dir = os.path.join(opt.data_dir, 'proteasome')
+    self.data_dir = os.path.join(opt.data_dir, 'proteasome_1024')
     self.img_dir = os.path.join(self.data_dir, 'images')
     if split == 'val':
       self.annot_path = os.path.join(
