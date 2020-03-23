@@ -14,9 +14,9 @@ import torch.utils.data as data
 class PROTEASOME(data.Dataset):
   num_classes = 1
   default_resolution = [1024, 1024]
-  mean = np.array([0.502271, 0.502271, 0.502271],
+  mean = np.array([0.588854, 0.588854, 0.588854],
                    dtype=np.float32).reshape(1, 1, 3)
-  std  = np.array([0.307421, 0.307421, 0.307421],
+  std  = np.array([0.065889, 0.065889, 0.065889],
                    dtype=np.float32).reshape(1, 1, 3)
 
   def __init__(self, opt, split):
