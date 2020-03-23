@@ -7,6 +7,7 @@ from pycocotools.cocoeval import COCOeval
 import numpy as np
 import json
 import os
+import matplotlib.pyplot as plt
 
 import torch.utils.data as data
 class TRPV1_512(data.Dataset):
@@ -116,6 +117,8 @@ class TRPV1_512(data.Dataset):
     pr2 = coco_eval.eval['precision'][2, :, 0, :, 2]
     pr3 = coco_eval.eval['precision'][4, :, 0, :, 2]
     x = np.arange(0.0, 1.01, 0.01)
+    
+    plt.switch_backend('agg')
     plt.xlabel('recall')
     plt.ylabel('precision')
     plt.xlim(0, 1.0)

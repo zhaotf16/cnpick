@@ -116,6 +116,7 @@ class GSPDVC_512(data.Dataset):
     pr2 = coco_eval.eval['precision'][2, :, 0, :, 2]
     pr3 = coco_eval.eval['precision'][4, :, 0, :, 2]
     x = np.arange(0.0, 1.01, 0.01)
+    plt.switch_backend('agg')
     plt.xlabel('recall')
     plt.ylabel('precision')
     plt.xlim(0, 1.0)
@@ -125,4 +126,4 @@ class GSPDVC_512(data.Dataset):
     plt.plot(x, pr1, 'b-', label='IoU=0.5')
     plt.plot(x, pr2, 'c-', label='IoU=0.6')
     plt.plot(x, pr3, 'y-', label='IoU=0.7')
-    plt.savefig('../../../../pr.png')
+    plt.savefig('/data00/UserHome/zwang/pr.png')
