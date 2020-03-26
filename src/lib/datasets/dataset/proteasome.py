@@ -111,6 +111,7 @@ class PROTEASOME(data.Dataset):
     self.save_results(results, save_dir)
     coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
+    coco_eval.params.maxDets = [500, 700, 1500]
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
@@ -128,4 +129,4 @@ class PROTEASOME(data.Dataset):
     plt.plot(x, pr1, 'b-', label='IoU=0.5')
     plt.plot(x, pr2, 'c-', label='IoU=0.6')
     plt.plot(x, pr3, 'y-', label='IoU=0.7')
-    plt.savefig('../../../../pr.png')
+    plt.savefig('/data00/UserHome/zwang/PR-Curve.png')
