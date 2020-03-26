@@ -93,10 +93,18 @@ class CtdetDetector(BaseDetector):
     for j in range(1, self.num_classes + 1):
       for bbox in results[j]:
         if bbox[4] > self.opt.vis_thresh:
-          if bbox[2] - bbox[0] < 14 or bbox[3] - bbox[1] < 14:
+          if not self.bbox_valid(bbox, 512, 10):
             continue
           debugger.add_coco_bbox(bbox[:4], j - 1, bbox[4], img_id='ctdet')
           boxes += 1
     #debugger.show_all_imgs(pause=self.pause)
     print(boxes, ' objects picked')
     debugger.save_all_imgs(path='/data00/UserHome/zwang/cnpick/output', genID=True)
+  
+  def bbox_valid(self, bbox, imsize=512, dis=10):
+    if bbox[0] < dis or bbox[0] > imsize - dis:
+      return False
+    elif bbox[1] < dis or bbox[1] > imsize - dis:
+      return False
+    else:
+      return True
