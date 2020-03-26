@@ -103,12 +103,26 @@ class PROTEASOME_512(data.Dataset):
     json.dump(self.convert_eval_format(results), 
                 open('{}/results.json'.format(save_dir), 'w'))
   
+  def bbox_valid(self, bbox, imsize=512, dis=10):
+    if bbox[0] < dis or bbox[0] > imsize - dis:
+      return False
+    elif bbox[1] < dis or bbox[1] > imsize - dis:
+      return False
+    else:
+      return True
+
   def run_eval(self, results, save_dir):
     # result_json = os.path.join(save_dir, "results.json")
     # detections  = self.convert_eval_format(results)
     # json.dump(detections, open(result_json, "w"))
     self.save_results(results, save_dir)
-    coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
+    a = json.load(open('{}/results/json'.format(save_dir)))
+    for i in range(len(a)-1,-1,-1):
+      if not self.bbox_valid(a[i]['bbox']):
+        del(a[i])
+    json.dump(a, open('{}/processed_results.json'.format(save_dir)))
+    #coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
+    coco_dets = self.coco.loadRes('{}/processed_results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
     coco_eval.params.maxDets=[500,600,1500]
     coco_eval.evaluate()
