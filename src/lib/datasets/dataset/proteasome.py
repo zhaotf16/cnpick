@@ -14,9 +14,9 @@ import torch.utils.data as data
 class PROTEASOME(data.Dataset):
   num_classes = 1
   default_resolution = [1024, 1024]
-  mean = np.array([0.588854, 0.588854, 0.588854],
+  mean = np.array([0.507738, 0.507738, 0.507738],
                    dtype=np.float32).reshape(1, 1, 3)
-  std  = np.array([0.065889, 0.065889, 0.065889],
+  std  = np.array([0.288649, 0.288649, 0.288649],
                    dtype=np.float32).reshape(1, 1, 3)
 
   def __init__(self, opt, split):
@@ -109,6 +109,12 @@ class PROTEASOME(data.Dataset):
     # detections  = self.convert_eval_format(results)
     # json.dump(detections, open(result_json, "w"))
     self.save_results(results, save_dir)
+    # remove edge boxes
+    #a = json.load(open('{}/results.json'.format(save_dir)))
+    #for i in range(len(a)-1,-1,-1):
+    #  if not self.bbox_valid(a[i]['bbox']):
+    #    del(a[i])
+    #json.dump(a, open('{}/processed_results.json'.format(save_dir), 'w'))
     coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
     coco_eval.evaluate()
