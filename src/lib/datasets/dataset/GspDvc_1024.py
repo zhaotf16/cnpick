@@ -8,20 +8,18 @@ import numpy as np
 import json
 import os
 import matplotlib.pyplot as plt
-
 import torch.utils.data as data
-
-class PROTEASOME(data.Dataset):
+class GSPDVC_512(data.Dataset):
   num_classes = 1
   default_resolution = [1024, 1024]
-  mean = np.array([0.507738, 0.507738, 0.507738],
+  mean = np.array([0.543879, 0.543879, 0.543879],
                    dtype=np.float32).reshape(1, 1, 3)
-  std  = np.array([0.288649, 0.288649, 0.288649],
+  std  = np.array([0.103175, 0.103175, 0.103175],
                    dtype=np.float32).reshape(1, 1, 3)
 
   def __init__(self, opt, split):
-    super(PROTEASOME, self).__init__()
-    self.data_dir = os.path.join(opt.data_dir, 'proteasome_1024')
+    super(GSPDVC_512, self).__init__()
+    self.data_dir = os.path.join(opt.data_dir, 'GspDvc_1024')
     self.img_dir = os.path.join(self.data_dir, 'images')
     if split == 'val':
       self.annot_path = os.path.join(
@@ -41,9 +39,9 @@ class PROTEASOME(data.Dataset):
         self.annot_path = os.path.join(
           self.data_dir, 'annotations', 
           'train.json')
-    self.max_objs = 1500
+    self.max_objs = 2500
     self.class_name = [
-      '__background__', 'proteasome']
+      '__background__', 'GspDvc']
     self._valid_ids = [
       1]
     self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
@@ -63,7 +61,7 @@ class PROTEASOME(data.Dataset):
     self.split = split
     self.opt = opt
 
-    print('==> initializing proteasome {} data.'.format(split))
+    print('==> initializing GspDvc {} data.'.format(split))
     self.coco = coco.COCO(self.annot_path)
     self.images = self.coco.getImgIds()
     self.num_samples = len(self.images)
@@ -110,7 +108,7 @@ class PROTEASOME(data.Dataset):
     elif bbox[1] < dis or bbox[1] > imsize - dis:
       return False
     else:
-      return True
+      return True 
 
   def run_eval(self, results, save_dir):
     # result_json = os.path.join(save_dir, "results.json")
@@ -126,6 +124,7 @@ class PROTEASOME(data.Dataset):
     coco_dets = self.coco.loadRes('{}/processed_results.json'.format(save_dir))
     #coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
+    coco_eval.params.maxDets=[500,600,1500]
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
@@ -143,4 +142,4 @@ class PROTEASOME(data.Dataset):
     plt.plot(x, pr1, 'b-', label='IoU=0.5')
     plt.plot(x, pr2, 'c-', label='IoU=0.6')
     plt.plot(x, pr3, 'y-', label='IoU=0.7')
-    plt.savefig('../../../../pr.png')
+    plt.savefig('/data00/UserHome/zwang/pr.png')
