@@ -49,9 +49,9 @@ class Debugger(object):
       self.names = pascal_class_name
     elif dataset == 'proteasome_512':
       self.names = proteasome_512_class_name
-    elif dataset == 'GspDvc_512':
+    elif dataset == 'GspDvc_512' or dataset == 'GspDvc_1024':
       self.names = GspDvc_class_names
-    elif dataset == 'TrpV1':
+    elif dataset == 'TrpV1' or dataset == 'TrpV1_1024':
       self.names = TrpV1_class_names
     elif dataset == 'gta':
       self.names = gta_class_name

@@ -12,9 +12,10 @@ class opts(object):
     # basic experiment setting
     self.parser.add_argument('task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
-    self.parser.add_argument('--dataset', default='GspDvc_512',
+    self.parser.add_argument('--dataset', default='proteasome',
                              help='coco | kitti | coco_hp | pascal'
-                              '| proteasome | proteasome_512 | GspDvc_512 | TrpV1_512')
+                              '| proteasome | proteasome_512 | GspDvc_512 | TrpV1_512'
+                              '| TrpV1_1024 | GspDvc_1024')
     self.parser.add_argument('--exp_id', default='default')
     self.parser.add_argument('--test', action='store_true')
     self.parser.add_argument('--debug', type=int, default=0,

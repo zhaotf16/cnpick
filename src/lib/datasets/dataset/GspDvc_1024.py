@@ -9,12 +9,12 @@ import json
 import os
 import matplotlib.pyplot as plt
 import torch.utils.data as data
-class GSPDVC_512(data.Dataset):
+class GSPDVC_1024(data.Dataset):
   num_classes = 1
   default_resolution = [1024, 1024]
-  mean = np.array([0.543879, 0.543879, 0.543879],
+  mean = np.array([0.509655, 0.509655, 0.509655],
                    dtype=np.float32).reshape(1, 1, 3)
-  std  = np.array([0.103175, 0.103175, 0.103175],
+  std  = np.array([0.288685, 0.288685, 0.288685],
                    dtype=np.float32).reshape(1, 1, 3)
 
   def __init__(self, opt, split):
@@ -121,6 +121,7 @@ class GSPDVC_512(data.Dataset):
       if not self.bbox_valid(a[i]['bbox']):
         del(a[i])
     json.dump(a, open('{}/processed_results.json'.format(save_dir), 'w'))
+
     coco_dets = self.coco.loadRes('{}/processed_results.json'.format(save_dir))
     #coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
@@ -128,6 +129,7 @@ class GSPDVC_512(data.Dataset):
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
+    #draw PR-Curve
     pr1 = coco_eval.eval['precision'][0, :, 0, :, 2]
     pr2 = coco_eval.eval['precision'][2, :, 0, :, 2]
     pr3 = coco_eval.eval['precision'][4, :, 0, :, 2]

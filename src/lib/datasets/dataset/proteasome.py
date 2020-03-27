@@ -104,13 +104,13 @@ class PROTEASOME(data.Dataset):
     json.dump(self.convert_eval_format(results), 
                 open('{}/results.json'.format(save_dir), 'w'))
   
-  def bbox_valid(self, bbox, imsize=512, dis=10):
+ def bbox_valid(self, bbox, imsize=512, dis=10):
     if bbox[0] < dis or bbox[0] > imsize - dis:
       return False
     elif bbox[1] < dis or bbox[1] > imsize - dis:
       return False
     else:
-      return True
+      return True 
 
   def run_eval(self, results, save_dir):
     # result_json = os.path.join(save_dir, "results.json")
@@ -126,7 +126,7 @@ class PROTEASOME(data.Dataset):
     coco_dets = self.coco.loadRes('{}/processed_results.json'.format(save_dir))
     #coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
-    coco_eval.params.maxDets = [500, 700, 1500]
+    coco_eval.params.maxDets=[500,600,1500]
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
@@ -144,4 +144,4 @@ class PROTEASOME(data.Dataset):
     plt.plot(x, pr1, 'b-', label='IoU=0.5')
     plt.plot(x, pr2, 'c-', label='IoU=0.6')
     plt.plot(x, pr3, 'y-', label='IoU=0.7')
-    plt.savefig('/data00/UserHome/zwang/PR-Curve.png')
+    plt.savefig('/data00/UserHome/zwang/pr.png')
