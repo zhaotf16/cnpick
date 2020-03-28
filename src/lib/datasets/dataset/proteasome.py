@@ -104,7 +104,7 @@ class PROTEASOME(data.Dataset):
     json.dump(self.convert_eval_format(results), 
                 open('{}/results.json'.format(save_dir), 'w'))
   
- def bbox_valid(self, bbox, imsize=512, dis=10):
+  def bbox_valid(self, bbox, imsize=512, dis=10):
     if bbox[0] < dis or bbox[0] > imsize - dis:
       return False
     elif bbox[1] < dis or bbox[1] > imsize - dis:
@@ -120,7 +120,7 @@ class PROTEASOME(data.Dataset):
     # remove edge boxes
     a = json.load(open('{}/results.json'.format(save_dir)))
     for i in range(len(a)-1,-1,-1):
-      if not self.bbox_valid(a[i]['bbox']):
+      if not self.bbox_valid(a[i]['bbox'], 1024):
         del(a[i])
     json.dump(a, open('{}/processed_results.json'.format(save_dir), 'w'))
     coco_dets = self.coco.loadRes('{}/processed_results.json'.format(save_dir))
