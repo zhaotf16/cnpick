@@ -1,6 +1,8 @@
 import os
+import coord
 import mrcHelper
 import starHelper
+
 import numpy as np
 
 from absl import app
@@ -26,7 +28,6 @@ def downsample(inputs, use_factor=False, para1=None, para2=None):
                 factor=para1,
                 shape=para2
             )
-            
         else:
             print("Prcocessing %s ..." % (inputs[i].name))
             inputs[i].data = mrcHelper.downsample_with_size(
@@ -34,41 +35,7 @@ def downsample(inputs, use_factor=False, para1=None, para2=None):
                 size1=para1,
                 size2=para2
             )
-    
     return inputs
-
-def star2label(inputs, image_size, grid_size=64, particle_size=220):
-    #inputs is a list of 
-    '''
-    label = np.zeros(
-        (len(inputs), grid_size, grid_size, 5), 
-        dtype=np.float32
-    )
-    grid_scale = image_size // grid_size
-    for i in range(len(inputs)):
-        for coord in inputs[i].content:
-            x_index = int(coord[0] - 1) // grid_scale
-            y_index = int(coord[1] - 1) // grid_scale
-            label[i, x_index, y_index, 0] = coord[0] / image_size
-            label[i, x_index, y_index, 1] = coord[1] / image_size
-            label[i, x_index, y_index, 2] = particle_size[0] / image_size
-            label[i, x_index, y_index, 3] = particle_size[1] / image_size
-            label[i, x_index, y_index, 4] = 1.0
-    '''
-    label = np.zeros(
-        (len(inputs), grid_size, grid_size, 1),
-        dtype = np.float32
-    )
-    grid_scale = image_size // grid_size
-    for i in range(len(inputs)):
-        particles = 0
-        for coord in inputs[i].content:
-            x = int(coord[0] - 1) // grid_scale
-            y = int(coord[1] - 1) // grid_scale
-            label[i, y, x, 0] = 1.0
-            particles += 1
-        print(particles, ' particles loaded')
-    return label
 
 def mrc2array(inputs, image_size):
     #inputs is a list of MrcData
@@ -86,30 +53,75 @@ def mrc2array(inputs, image_size):
         array[i,...] = np.expand_dims(inputs[i].data.astype(np.float32), axis=-1)
     return array
 
+def label_downsample(data, label, t, w, h):
+    downsampled_label = []
+    if t == 'star':
+        for i in range(len(label)):
+            name = label[i].name
+            content = starHelper.downsample_with_size(
+                label[i].content,
+                (w / data[i].header[0], h / data[i].header[1])
+            )
+            downsampled_label.append(starHelper.StarData(name, content))
+    elif t == 'coord':
+        for i in range(len(label)):
+            name = label[i].name
+            content = coord.downsample_with_size(
+                label[i].content,
+                (w / data[i].header[0], h / data[i].header[1])
+            )
+            downsampled_label.append(coord.CoordData(name, content))
+    elif t == 'box':
+        pass
+    else:
+        print('A valid type of label is required: star | coord | box')
+    return downsampled_label 
+
+def write_label(label):
+    #TODO: merge all types of label
+    pass
+
+def read_label(label_path, label_type):
+    if label_type == 'star':
+        return starHelper.read_all_star(label_path)
+    elif label_type == 'coord':
+        return coord.read_all_coord(label_path)
+    else:
+        print('A valid type is required: star | coord | box')
+        return []
+
 def main(argv):
     del argv
     data_path = FLAGS.data_path
     label_path = FLAGS.label_path
     data_dst = FLAGS.data_dst_path
     label_dst = FLAGS.label_dst_path
+    target_size = FLAGS.target_size
+    label_type = FLAGS.label_type
 
     data = mrcHelper.load_mrc_file(data_path)
-    label = starHelper.read_all_star(label_path)
+    label = read_label(label_path, label_type)
+    #label = starHelper.read_all_star(label_path)
     #debug:
     for i in range(len(data)):
         print(data[i].name, '\t', label[i].name)
     # downsampled_data = preprocess(data, False, para1=1024, para2=1024)
-    data = downsample(data, False, para1=1024, para2=1024)
-    downsampled_label = []
-    for i in range(len(label)):
-        name = label[i].name
-        content = starHelper.downsample_with_size(
-            label[i].content,
-            (1024 / data[i].header[0], 1024 / data[i].header[1])
-        )
-        downsampled_label.append(starHelper.StarData(name, content))
-
+    data = downsample(data, False, para1=target_size, para2=target_size)
+    #downsampled_label = []
+    #for i in range(len(label)):
+    #    name = label[i].name
+    #    content = starHelper.downsample_with_size(
+    #        label[i].content,
+    #        (1024 / data[i].header[0], 1024 / data[i].header[1])
+    #    )
+    #   downsampled_label.append(starHelper.StarData(name, content))
+    downsampled_label = label_downsample(
+        data, label, 
+        label_type, 
+        target_size, target_size
+    )
     mrcHelper.write_mrc(data, dst=data_dst)
+    #write_label(downsampled_label, label_type)
     starHelper.write_star(downsampled_label, dst=label_dst)
 
 def normalize_uint8(data):
@@ -121,13 +133,13 @@ def normalize_uint8(data):
     data = data.astype(np.float32)    
 
 if __name__ == '__main__':
-    #This is a test on eml1/user/ztf
     FLAGS = flags.FLAGS
     flags.DEFINE_string("data_path", None, "path of data(mrc, etc.)")
     flags.DEFINE_string("label_path", None, "path of labels(star, etc.)")
     flags.DEFINE_string("data_dst_path", None, "target to store processed data")
     flags.DEFINE_string("label_dst_path", None, "target to store processed labels")
-
+    flags.DEFINE_string("label_type", "star", "type of label, star | coord | box")
+    flags.DEFINE_integer("target_size", 1024, "the size of processed data")
     flags.mark_flag_as_required("data_path")
     flags.mark_flag_as_required("label_path")
     flags.mark_flag_as_required("data_dst_path")

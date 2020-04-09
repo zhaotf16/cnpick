@@ -53,6 +53,8 @@ class Debugger(object):
       self.names = GspDvc_class_names
     elif dataset == 'TrpV1' or dataset == 'TrpV1_1024':
       self.names = TrpV1_class_names
+    elif dataset == 'particle':
+      self.names = particle_names
     elif dataset == 'gta':
       self.names = gta_class_name
       self.focal_length = 935.3074360871937
@@ -459,6 +461,10 @@ GspDvc_class_names = [
 
 TrpV1_class_names = [
   'TrpV1'
+]
+
+particle_names = [
+  'particle'
 ]
 
 pascal_class_name = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", 

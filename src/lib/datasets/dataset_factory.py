@@ -17,6 +17,7 @@ from .dataset.GspDvc_512 import GSPDVC_512
 from .dataset.TrpV1 import TRPV1_512
 from .dataset.GspDvc_1024 import GSPDVC_1024
 from .dataset.TrpV1_1024 import TRPV1_1024
+from .dataset.particle import PARTICLE
 
 dataset_factory = {
   'coco': COCO,
@@ -28,7 +29,8 @@ dataset_factory = {
   'GspDvc_512': GSPDVC_512,
   'TrpV1_512': TRPV1_512,
   'GspDvc_1024': GSPDVC_1024,
-  'TrpV1_1024': TRPV1_1024
+  'TrpV1_1024': TRPV1_1024,
+  'particle': PARTICLE
 }
 
 _sample_factory = {

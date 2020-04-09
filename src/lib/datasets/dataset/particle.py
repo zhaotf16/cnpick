@@ -10,17 +10,18 @@ import os
 import matplotlib.pyplot as plt
 
 import torch.utils.data as data
-class TRPV1_1024(data.Dataset):
+
+class PARTICLE(data.Dataset):
   num_classes = 1
   default_resolution = [1024, 1024]
-  mean = np.array([0.505974, 0.505974, 0.505974],
+  mean = np.array([0.507783, 0.507783, 0.507783],
                    dtype=np.float32).reshape(1, 1, 3)
-  std  = np.array([0.288657, 0.288657, 0.288657],
+  std  = np.array([0.288935, 0.288935, 0.288935],
                    dtype=np.float32).reshape(1, 1, 3)
 
   def __init__(self, opt, split):
-    super(TRPV1_1024, self).__init__()
-    self.data_dir = os.path.join(opt.data_dir, 'TrpV1_1024')
+    super(PARTICLE, self).__init__()
+    self.data_dir = os.path.join(opt.data_dir, 'particle')
     self.img_dir = os.path.join(self.data_dir, 'images')
     if split == 'val':
       self.annot_path = os.path.join(
@@ -40,9 +41,9 @@ class TRPV1_1024(data.Dataset):
         self.annot_path = os.path.join(
           self.data_dir, 'annotations', 
           'train.json')
-    self.max_objs = 2500
+    self.max_objs = 1500
     self.class_name = [
-      '__background__', 'TrpV1']
+      '__background__', 'particle']
     self._valid_ids = [
       1]
     self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
@@ -62,7 +63,7 @@ class TRPV1_1024(data.Dataset):
     self.split = split
     self.opt = opt
 
-    print('==> initializing TrpV1 {} data.'.format(split))
+    print('==> initializing particle {} data.'.format(split))
     self.coco = coco.COCO(self.annot_path)
     self.images = self.coco.getImgIds()
     self.num_samples = len(self.images)
@@ -102,8 +103,8 @@ class TRPV1_1024(data.Dataset):
   def save_results(self, results, save_dir):
     json.dump(self.convert_eval_format(results), 
                 open('{}/results.json'.format(save_dir), 'w'))
-
-  def bbox_valid(self, bbox, imsize=512, dis=10):
+  
+  def bbox_valid(self, bbox, imsize=1024, dis=15):
     if bbox[0] < dis or bbox[0] > imsize - dis:
       return False
     elif bbox[1] < dis or bbox[1] > imsize - dis:
@@ -116,17 +117,16 @@ class TRPV1_1024(data.Dataset):
     # detections  = self.convert_eval_format(results)
     # json.dump(detections, open(result_json, "w"))
     self.save_results(results, save_dir)
-   # remove edge boxes
+    # remove edge boxes
     a = json.load(open('{}/results.json'.format(save_dir)))
     for i in range(len(a)-1,-1,-1):
-      if not self.bbox_valid(a[i]['bbox'], 1024, 13):
+      if not self.bbox_valid(a[i]['bbox'], 1024):
         del(a[i])
     json.dump(a, open('{}/processed_results.json'.format(save_dir), 'w'))
     coco_dets = self.coco.loadRes('{}/processed_results.json'.format(save_dir))
     #coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
-    coco_eval.params.maxDets=[500,1000,1500]
-    
+    coco_eval.params.maxDets=[500,600,1500]
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
@@ -134,7 +134,6 @@ class TRPV1_1024(data.Dataset):
     pr2 = coco_eval.eval['precision'][2, :, 0, :, 2]
     pr3 = coco_eval.eval['precision'][4, :, 0, :, 2]
     x = np.arange(0.0, 1.01, 0.01)
-    
     plt.switch_backend('agg')
     plt.xlabel('recall')
     plt.ylabel('precision')
@@ -145,5 +144,4 @@ class TRPV1_1024(data.Dataset):
     plt.plot(x, pr1, 'b-', label='IoU=0.5')
     plt.plot(x, pr2, 'c-', label='IoU=0.6')
     plt.plot(x, pr3, 'y-', label='IoU=0.7')
-    plt.legend((u'Iou=0.5', u'IoU=0.6', u'IoU=0.7'))
     plt.savefig('/data00/UserHome/zwang/pr.png')
