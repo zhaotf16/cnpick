@@ -101,12 +101,10 @@ class CtdetDetector(BaseDetector):
     print(boxes, ' objects picked')
     debugger.save_all_imgs(path='/data00/UserHome/zwang/cnpick/output', genID=True)
   
-  def bbox_valid(self, bbox, imsize, dis, box_size):
-    if bbox[1] < dis or bbox[0] > imsize - dis:
+  def bbox_valid(self, bbox, imsize, dis):
+    if bbox[0] < dis or bbox[0] > imsize - dis:
       return False
-    elif bbox[1] < dis or bbox[0] > imsize - dis:
-      return False
-    elif bbox[2] - bbox[0] < box_size or bbox[3] - bbox[1] < box_size:
+    elif bbox[1] < dis or bbox[1] > imsize - dis:
       return False
     else:
       return True
