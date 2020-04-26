@@ -309,7 +309,6 @@ def load_png_file(path):
     return mrc_data
 
 def downsample_with_size(x, size1, size2):
-
     F = np.fft.rfft2(x)
     A = F[..., 0:size1//2, 0:size2//2+1]
     B = F[..., -size1//2:, 0:size2//2+1]
