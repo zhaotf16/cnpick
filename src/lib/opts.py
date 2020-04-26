@@ -9,6 +9,8 @@ import sys
 class opts(object):
   def __init__(self):
     self.parser = argparse.ArgumentParser()
+    # particle picking
+    self.parser.add_argument('particle_size', default=33)
     # basic experiment setting
     self.parser.add_argument('task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
