@@ -53,7 +53,7 @@ class Debugger(object):
       self.names = GspDvc_class_names
     elif dataset == 'TrpV1' or dataset == 'TrpV1_1024':
       self.names = TrpV1_class_names
-    elif dataset == 'particle':
+    elif dataset == 'particle' or 'Pand17and89':
       self.names = particle_names
     elif dataset == 'gta':
       self.names = gta_class_name
