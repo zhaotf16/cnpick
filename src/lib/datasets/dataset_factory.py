@@ -19,6 +19,8 @@ from .dataset.GspDvc_1024 import GSPDVC_1024
 from .dataset.TrpV1_1024 import TRPV1_1024
 from .dataset.particle import PARTICLE
 from .dataset.Pand17and89 import Pand17and89 
+from .dataset.Pand17and89and57 import Pand17and89and57
+
 dataset_factory = {
   'coco': COCO,
   'pascal': PascalVOC,
@@ -31,7 +33,8 @@ dataset_factory = {
   'GspDvc_1024': GSPDVC_1024,
   'TrpV1_1024': TRPV1_1024,
   'particle': PARTICLE,
-  'Pand17and89': Pand17and89
+  'Pand17and89': Pand17and89,
+  'Pand17and89and57': Pand17and89and57
 }
 
 _sample_factory = {
