@@ -1,4 +1,5 @@
 import os
+import box
 import coord
 import mrcHelper
 import starHelper
@@ -72,7 +73,13 @@ def label_downsample(data, label, t, w, h):
             )
             downsampled_label.append(coord.CoordData(name, content))
     elif t == 'box':
-        pass
+        for i in range(len(label)):
+            name = label[i].name
+            content = box.downsample_with_size(
+                label[i].content,
+                (w / data[i].header[0], h / data[i].header[1])
+            )
+            downsampled_label.append(coord.CoordData(name, content))
     else:
         print('A valid type of label is required: star | coord | box')
     return downsampled_label 
@@ -86,6 +93,9 @@ def read_label(label_path, label_type):
         return starHelper.read_all_star(label_path)
     elif label_type == 'coord':
         return coord.read_all_coord(label_path)
+    elif label_type == 'box':
+        print('reading box')
+        return box.read_all_box(label_path)
     else:
         print('A valid type is required: star | coord | box')
         return []
@@ -98,15 +108,24 @@ def main(argv):
     label_dst = FLAGS.label_dst_path
     target_size = FLAGS.target_size
     label_type = FLAGS.label_type
-
-    data = mrcHelper.load_mrc_file(data_path)
+    
+    mrc_data = mrcHelper.load_mrc_file(data_path)
+    #averge frame
+    for i in range(len(mrc_data)):
+        if mrc_data[i].header[2] < 2:
+            break
+        avg_mrc = np.zeros_like(mrc_data[i].data[0,...])
+        for j in range(mrc_data[i].header[2]):
+            avg_mrc += mrc_data[i].data[j, ...]
+        avg_mrc /= mrc_data[i].header[2]
+        mrc_data[i].data = avg_mrc
     label = read_label(label_path, label_type)
-    #label = starHelper.read_all_star(label_path)
     #debug:
-    for i in range(len(data)):
-        print(data[i].name, '\t', label[i].name)
+    for k in range(len(mrc_data)):
+        print(mrc_data[k].name, '\t', label[k].name)
     # downsampled_data = preprocess(data, False, para1=1024, para2=1024)
-    data = downsample(data, False, para1=target_size, para2=target_size)
+    mrc_data = downsample(mrc_data, False, para1=target_size, para2=target_size)
+    
     #downsampled_label = []
     #for i in range(len(label)):
     #    name = label[i].name
@@ -116,14 +135,17 @@ def main(argv):
     #    )
     #   downsampled_label.append(starHelper.StarData(name, content))
     downsampled_label = label_downsample(
-        data, label, 
+        mrc_data, label, 
         label_type, 
         target_size, target_size
     )
-    mrcHelper.write_mrc(data, dst=data_dst)
-    #write_label(downsampled_label, label_type)
-    starHelper.write_star(downsampled_label, dst=label_dst)
+    print(len(downsampled_label))
 
+    mrcHelper.write_mrc(mrc_data, dst=data_dst)
+    #write_label(downsampled_label, label_type)
+    print('writing label...')
+    starHelper.write_star(downsampled_label, dst=label_dst)
+    
 def normalize_uint8(data):
     for i in range(np.shape(data)[0]):
         maximum, minimum = np.max(data[i,...]), np.min(data[i,...])

@@ -32,7 +32,6 @@ def read_star(path):
             content = line.split()
            
             coordinates.append((int(float(content[x_index])), int(float(content[y_index]))))
-            coordinates.sort(key=lambda x: x[0])
     return coordinates
 
 def read_all_star(path):
@@ -62,6 +61,8 @@ def downsample_with_size(coordinates, scale):
     return downsampled
 
 def write_star(inputs, dst):
+    print('write_star')
+    print(len(inputs))
     if not os.path.exists(dst):
         os.makedirs(dst)
     if not dst.endswith('/'):
