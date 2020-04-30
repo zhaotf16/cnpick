@@ -24,15 +24,15 @@ def read_all_coord(path):
         return None
     if not path.endswith('/'):
         path += '/'
-    stars = []
+    coords = []
     for file in os.listdir(path):
         if file.endswith('.coord'):
             name, _ = os.path.splitext(file)
             print("Loading %s.coord..." % (name))
             content = read_coord(path + file)
-            stars.append(CoordData(name, content))
-    stars.sort(key=lambda s: s.name)
-    return stars
+            coords.append(CoordData(name, content))
+    coords.sort(key=lambda s: s.name)
+    return coords
 
 def downsample_with_size(coordinates, scale):
     #scale is a tuple (scale_x, scale_y)

@@ -1,8 +1,13 @@
+from __future__ import division, print_function
+
 import os
+import cv2
 import numpy as np
+from PIL import Image
+from PIL import ImageEnhance
 import struct
 from collections import namedtuple
-from PIL import Image
+
 #This file is copied from TopaZ:mrc.py and TopaZ:image.py
 #I add some extra functions to fit my task
 
@@ -251,18 +256,28 @@ def downsample_with_factor(x, factor=1, shape=None):
 
 
 class MrcData():
-    def __init__(self, name, header, data, label):
+    def __init__(self, name, header, data, label=None):
         #info is a tuple:(data, header, extend_header)
         self.name = name
         self.data = data
         self.header = header
         self.label = label
 
-def quantitize(data):
-    mi, ma = np.min(data), np.max(data)
+def quantize(x, mi=-3, ma=3, dtype=np.uint8):
+    #if mi is None:
+    #    mi = x.min()
+    #if ma is None:
+    #    ma = x.max()
+    ma = x.max()
+    mi = x.min()
     r = ma - mi
-    data = (data - mi) / r * 255
-    return data
+    x = 255.0 * (x - mi)/r + 0.5
+    x[x<0] = 0
+    x[x>255] = 255
+    x = x.astype(dtype)
+    return x
+    #buckets = np.linspace(mi, ma, 255)
+    #return np.digitize(x, buckets).astype(dtype)
 
 def load_mrc_file(path):
     if not os.path.isdir(path):
@@ -278,37 +293,13 @@ def load_mrc_file(path):
             with open(path+file, "rb") as f:
                 content = f.read()
             data, header, _ = parse(content=content)
-            data = quantitize(data)
             name, _ = os.path.splitext(file)
-            # TODO: load and process label according to STAR or EMAN
-            mrc_data.append(MrcData(name=name, header=header, data=data, label=""))
-    mrc_data.sort(key=lambda m: m.name)
-    return mrc_data
-
-def load_png_file(path):
-    if not os.path.isdir(path):
-        print(path, " is not a valid directory")
-        return
-    if not path.endswith('/'):
-        path += '/'
-
-    mrc_data = []
-    for file in os.listdir(path):
-        if file.endswith('.png'):
-            print("Loading %s ..." % (file))
-            im = Image.open(path+file)
-            data = np.array(im)
-            #with open(path+file, "rb") as f:
-            #    content = f.read()
-            #data, header, _ = parse(content=content)
-            #data = quantitize(data)
-            name, _ = os.path.splitext(file)
-            # TODO: load and process label according to STAR or EMAN
-            mrc_data.append(MrcData(name=name, header=None, data=data, label=""))
+            mrc_data.append(MrcData(name=name, header=header, data=data))
     mrc_data.sort(key=lambda m: m.name)
     return mrc_data
 
 def downsample_with_size(x, size1, size2):
+
     F = np.fft.rfft2(x)
     A = F[..., 0:size1//2, 0:size2//2+1]
     B = F[..., -size1//2:, 0:size2//2+1]
@@ -322,14 +313,73 @@ def downsample_with_size(x, size1, size2):
 
     return f.astype(x.dtype)
 
-def write_mrc(inputs, dst):
-    if not os.path.exists(dst):
-        os.makedirs(dst)
-    if not dst.endswith('/'):
-        dst += '/'
-    #for mrc_data in inputs:
-    for mrc_data in inputs:
-        print("Writing %s.mrc ..." % (mrc_data.name))
-        data = np.expand_dims(mrc_data.data, axis=0)
-        with open(dst+mrc_data.name+'.mrc', "wb") as f:
-            write(f, data)
+def unquantize(x, mi=-3, ma=3, dtype=np.float32):
+    """ convert quantized image array back to approximate unquantized values """
+    x = x.astype(dtype)
+    y = x*(ma-mi)/255 + mi
+    return y
+
+def save_image(x, path, mi=-3, ma=3, f=None, verbose=False):
+    if f is None:
+        f = os.path.splitext(path)[1]
+        f = f[1:] # remove the period
+    else:
+        path = path + '.' + f
+
+    if verbose:
+        print('# saving:', path)
+
+    if f == 'mrc':
+        save_mrc(x, path)
+    elif f == 'tiff' or f == 'tif':
+        save_tiff(x, path)
+    elif f == 'png':
+        save_png(x, path, mi=mi, ma=ma)
+    elif f == 'jpg' or f == 'jpeg':
+        save_jpeg(x, path, mi=mi, ma=ma)
+
+def save_mrc(x, path):
+    with open(path, 'wb') as f:
+        x = x[np.newaxis] # need to add z-axis for mrc write
+        write(f, x)
+
+def save_tiff(x, path):
+    im = Image.fromarray(x)
+    im.save(path, 'tiff')
+
+def save_png(x, path, mi=-3, ma=3):
+    # byte encode the image
+    im = Image.fromarray(quantize(x, mi=mi, ma=ma))
+    x = np.array(im)
+    im = cv2.merge([x,x,x])
+    #im = cv2.fastNlMeansDenoising(im, None, 10, 7, 11)
+    (x, y, z) = cv2.split(im)
+    x = cv2.equalizeHist(x)
+    im = cv2.merge([x,x,x])
+    im = Image.fromarray(im)
+    #im = enhance(im)
+    im.save(path, 'png')
+
+def save_jpeg(x, path, mi=-3, ma=3):
+    # byte encode the image
+    im = Image.fromarray(quantize(x, mi=mi, ma=ma))
+    im = enhance(im)
+    im.save(path, 'jpeg')
+
+def enhance(im):
+    enh_con = ImageEnhance.Contrast(im)
+    im = enh_con.enhance(10)
+    
+    #enh_sha = ImageEnhance.Sharpness(im)
+    #im = enh_sha.enhance(0.5)
+
+    enh_bri = ImageEnhance.Brightness(im)
+    im = enh_bri.enhance(0.9)
+    return im
+
+def main():
+    mrc_data = load_mrc_file('GspDvc_mrc_1024')
+    for i in range(len(mrc_data)):
+        save_image(mrc_data[i].data, 'GspDvc_1024/'+mrc_data[i].name, f='png', verbose=True)
+if __name__ == '__main__':
+    main()

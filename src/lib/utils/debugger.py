@@ -15,6 +15,7 @@ class Debugger(object):
       self.plt = plt
     self.imgs = {}
     self.theme = theme
+    
     colors = [(color_list[_]).astype(np.uint8) \
             for _ in range(len(color_list))]
     self.colors = np.array(colors, dtype=np.uint8).reshape(len(colors), 1, 1, 3)
@@ -84,6 +85,7 @@ class Debugger(object):
     if revert_color:
       img = 255 - img
     self.imgs[img_id] = img.copy()
+    self
   
   def add_mask(self, mask, bg, imgId = 'default', trans = 0.8):
     self.imgs[imgId] = (mask.reshape(

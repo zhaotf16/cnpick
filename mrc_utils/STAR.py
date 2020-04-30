@@ -1,7 +1,5 @@
-import os     
-import cv2
-import json
- 
+import os
+
 class StarData():
     def __init__(self, name="", content=[]):
         self.name = name
@@ -34,7 +32,6 @@ def read_star(path):
             content = line.split()
            
             coordinates.append((int(float(content[x_index])), int(float(content[y_index]))))
-            coordinates.sort(key=lambda x: x[0])
     return coordinates
 
 def read_all_star(path):
@@ -64,6 +61,8 @@ def downsample_with_size(coordinates, scale):
     return downsampled
 
 def write_star(inputs, dst):
+    print('write_star')
+    print(len(inputs))
     if not os.path.exists(dst):
         os.makedirs(dst)
     if not dst.endswith('/'):
@@ -82,68 +81,12 @@ def write_star(inputs, dst):
             for item in star_data.content:
                 f.write("%d.0\t%d.0\t-999\t-999.0\t-999.0\n"%(item[0], item[1]))
             f.write('\n')
-
-def star2coco(data, json_name):
-    root_path = "TrpV1_1024/"
-    images, categories, annotations = [], [], []
-    
-    category_dict = {"TrpV1": 1}
-    
-    for cat_n in category_dict:
-        categories.append({"supercategory": "", "id": category_dict[cat_n], "name": cat_n})
-
-    img_id = 0
-    anno_id_count = 0
-    for star in data:
-        #anno_id_count = 0
-        img_name = star.name + '.png'
-        img_name = img_name.replace('_autopick','')
-        img_name = img_name.replace('_DW', '')
-        img_name = img_name.replace('_manualpick', '')
-        img_name = img_name.replace('_empiar', '')
-        print(img_name)
-        img_cv2 = cv2.imread(root_path + img_name)
-        [height, width, _] = img_cv2.shape
-        # images info
-        images.append({"file_name": img_name, "height": height, "width": width, "id": img_id})
-        for coord in star.content:
-            """
-            annotation info:
-            id : anno_id_count
-            category_id : category_id
-            bbox : bbox
-            segmentation : [segment]
-            area : area
-            iscrowd : 0
-            image_id : image_id
-            """
-            category_id = category_dict["TrpV1"]
-            w, h = 19, 19
-            x1 = max(coord[0] - w/2, 1)
-            y1 = max(coord[1] - h/2, 1)
-            x2 = min(coord[0] + w/2, width)
-            y2 = min(coord[1] + h/2, height)
-
-            bbox = [x1, y1, w, h]
-            segment = [x1, y1, x2, y1, x2, y2, x1, y2]
-            area = w * h
-
-            anno_info = {'id': anno_id_count, 'category_id': category_id, 'bbox': bbox, 'segmentation': [segment],
-                        'area': area, 'iscrowd': 0, 'image_id': img_id}
-            annotations.append(anno_info)
-            anno_id_count += 1
- 
-        img_id += 1
- 
-    all_json = {"images": images, "annotations": annotations, "categories": categories}
-    with open(json_name+".json", "w") as outfile:
-        json.dump(all_json, outfile)
+                 
 
 if __name__ == '__main__':
-    stars = read_all_star('TrpV1_mrc_1024')
-    train = stars[0:160]
-    valid = stars[160:180]
-    test = stars[180:]
-    star2coco(train, 'train')
-    star2coco(valid, 'val')
-    star2coco(test, 'test')
+    path = '../dataset/EMPIAR-10025/rawdata/label_for_training/'
+    stars = read_all_star(path)
+    for star in stars:
+        star.content = downsample_with_size(star.content, (1024/7676, 1024/7420))
+    print(stars[0].content)
+    #content = read_star(path
