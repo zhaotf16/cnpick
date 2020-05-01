@@ -18,7 +18,7 @@ from models.utils import flip_tensor
 from utils.image import get_affine_transform
 from utils.post_process import ctdet_post_process
 from utils.debugger import Debugger
-
+from mrc_utils.thi import write_thi
 from .base_detector import BaseDetector
 
 class CtdetDetector(BaseDetector):
@@ -87,8 +87,11 @@ class CtdetDetector(BaseDetector):
                                  detection[i, k, 4], 
                                  img_id='out_pred_{:.1f}'.format(scale))
 
-  def show_results(self, debugger, image, results, image_name):
+  def show_results(self, debugger, image, results, image_name, header):
     debugger.add_img(image, img_id='ctdet')
+    name = image_name.split('/')[-1]
+    thi = {}
+    thi[name] = []
     boxes = 0
     for j in range(1, self.num_classes + 1):
       for bbox in results[j]:
@@ -96,9 +99,13 @@ class CtdetDetector(BaseDetector):
           if not self.bbox_valid(bbox, 1024, 25):
             continue
           debugger.add_coco_bbox(bbox[:4], j - 1, bbox[4], img_id='ctdet')
+          thi[name].append(
+            ((bbox[0]+bbox[2])/2 * header[0] / 1024, (bbox[1]+bbox[3])/2 * header[1] / 1024, bbox[4])
+          )
           boxes += 1
     #debugger.show_all_imgs(pause=self.pause)
     print(boxes, ' objects picked')
+    write_thi(thi, '/data00/UserHome/zwang/cnpick/output')
     debugger.save_all_imgs(path='/data00/UserHome/zwang/cnpick/output', genID=True)
   
   def bbox_valid(self, bbox, imsize, dis):
