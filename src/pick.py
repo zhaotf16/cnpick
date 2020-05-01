@@ -11,7 +11,7 @@ import numpy as np
 from opts import opts
 from PIL import Image
 from detectors.detector_factory import detector_factory
-from mrc_utils.mrc import parse, quantize, downsample_with_size
+from mrc_utils.mrc import parse, downsample_with_size
 from mrc_utils.mrc2png import save_image
 torch.backends.cudnn.enabled = False
 
