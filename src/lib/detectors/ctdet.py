@@ -89,7 +89,7 @@ class CtdetDetector(BaseDetector):
 
   def show_results(self, debugger, image, results, image_name, header):
     debugger.add_img(image, img_id='ctdet')
-    name = image_name.split('/')[-1]
+    name = image_name.split('/')[-1].replace('.png', '')
     thi = {}
     thi[name] = []
     boxes = 0

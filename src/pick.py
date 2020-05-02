@@ -12,7 +12,7 @@ from opts import opts
 from PIL import Image
 from detectors.detector_factory import detector_factory
 from mrc_utils.mrc import parse, downsample_with_size
-from mrc_utils.mrc2png import save_image
+from mrc_utils.mrc2png import save_image, quantize
 torch.backends.cudnn.enabled = False
 
 #image_ext = ['jpg', 'jpeg', 'png', 'webp', 'mrc']
@@ -34,19 +34,23 @@ def pick(opt):
             image_names.append(os.path.join(opt.demo, file_name))
   else:
     image_names = [opt.demo]
-  visual_path = os.path.join(opt.demo, 'visual_1024/')
-  print(visual_path)
-  if not os.path.exists(visual_path):
-    os.makedirs(visual_path)
+  #visual_path = os.path.join(opt.demo, 'visual_1024/')
+  #if not os.path.exists(visual_path):
+  #  os.makedirs(visual_path)
   for (image_name) in image_names:
     with open(image_name, "rb") as f:
         content = f.read()
     data, header, _ = parse(content=content)
     print('downsampling',image_name,'...')
     data = downsample_with_size(data, 1024, 1024)
-    png_name = visual_path + image_name.split('/')[-1].replace('.mrc','')
-    save_image(data, png_name, f='png', verbose=True)
-    ret = detector.run(png_name+'.png', header)
+    data = quantize(data)
+    data = cv2.equalizeHist(data)
+    data = cv2.merge([data, data, data])
+    name = image_name.split('/')[-1].replace('.mrc','')
+    #png_name = visual_path + image_name.split('/')[-1].replace('.mrc','')
+    #save_image(data, png_name, f='png', verbose=True)
+    #ret = detector.run(png_name+'.png', header)
+    ret = detector.run(data, header, name)
     time_str = ''
     for stat in time_stats:
       time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])

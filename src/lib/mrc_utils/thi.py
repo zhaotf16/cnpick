@@ -60,7 +60,6 @@ def write_thi(inputs, dst):
             f.write('[End]')
 '''
 def write_thi(inputs, dst):
-    print('write thi...')
     if not os.path.exists(dst):
         os.makedirs(dst)
     if not dst.endswith('/'):
