@@ -66,11 +66,11 @@ def write_thi(inputs, dst):
     if not dst.endswith('/'):
         dst += '/'
     #for mrc_data in inputs:
-    for k, v in inputs:
+    for k in inputs:
         print("Writing %s.thi ..." % (k))
         with open(dst+k+'.thi', "w") as f:
             f.write('[Particle Coordinates: X Y Value]\n')
-            for item in v:
+            for item in inputs[k]:
                 f.write("%d\t%d\t%f\n" % (item[0], item[1], item[2]))
             f.write('[End]')
 
