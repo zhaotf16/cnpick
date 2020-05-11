@@ -217,3 +217,4 @@ if __name__ == '__main__':
     flags.mark_flag_as_required("data_dst_path")
     flags.mark_flag_as_required("label_dst_path")
     app.run(main)
+'''
