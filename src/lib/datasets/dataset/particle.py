@@ -8,20 +8,18 @@ import numpy as np
 import json
 import os
 import matplotlib.pyplot as plt
-
 import torch.utils.data as data
-
-class PARTICLE(data.Dataset):
+class Pand17and89(data.Dataset):
   num_classes = 1
   default_resolution = [1024, 1024]
-  mean = np.array([0.507783, 0.507783, 0.507783],
+  mean = np.array([ 0.507675,0.507675,0.507675],
                    dtype=np.float32).reshape(1, 1, 3)
-  std  = np.array([0.288935, 0.288935, 0.288935],
+  std  = np.array([0.165826,0.165826,0.165826],
                    dtype=np.float32).reshape(1, 1, 3)
 
-  def __init__(self, opt, split):
-    super(PARTICLE, self).__init__()
-    self.data_dir = os.path.join(opt.data_dir, 'particle')
+  def __init__(self, opt, split, exp_id):
+    super(Pand17and89, self).__init__()
+    self.data_dir = os.path.join(opt.data_dir, opt.exp_id)
     self.img_dir = os.path.join(self.data_dir, 'images')
     if split == 'val':
       self.annot_path = os.path.join(
@@ -43,7 +41,7 @@ class PARTICLE(data.Dataset):
           'train.json')
     self.max_objs = 1500
     self.class_name = [
-      '__background__', 'particle']
+      '__background__', 'TrpV1']
     self._valid_ids = [
       1]
     self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
@@ -63,7 +61,7 @@ class PARTICLE(data.Dataset):
     self.split = split
     self.opt = opt
 
-    print('==> initializing particle {} data.'.format(split))
+    print('==> initializing TrpV1 {} data.'.format(split))
     self.coco = coco.COCO(self.annot_path)
     self.images = self.coco.getImgIds()
     self.num_samples = len(self.images)
@@ -104,44 +102,48 @@ class PARTICLE(data.Dataset):
     json.dump(self.convert_eval_format(results), 
                 open('{}/results.json'.format(save_dir), 'w'))
   
-  def bbox_valid(self, bbox, imsize=1024, dis=15):
+  def bbox_valid(self, bbox, imsize=1024, dis=25):
     if bbox[0] < dis or bbox[0] > imsize - dis:
       return False
     elif bbox[1] < dis or bbox[1] > imsize - dis:
       return False
     else:
-      return True 
-
+      return True
   def run_eval(self, results, save_dir):
     # result_json = os.path.join(save_dir, "results.json")
     # detections  = self.convert_eval_format(results)
     # json.dump(detections, open(result_json, "w"))
     self.save_results(results, save_dir)
-    # remove edge boxes
     a = json.load(open('{}/results.json'.format(save_dir)))
-    for i in range(len(a)-1,-1,-1):
-      if not self.bbox_valid(a[i]['bbox'], 1024):
-        del(a[i])
+    for i in range(len(a) - 1, -1, -1):
+      if not self.bbox_valid(a[i]['bbox']):
+        del (a[i])
     json.dump(a, open('{}/processed_results.json'.format(save_dir), 'w'))
+
     coco_dets = self.coco.loadRes('{}/processed_results.json'.format(save_dir))
-    #coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     coco_eval = COCOeval(self.coco, coco_dets, "bbox")
-    coco_eval.params.maxDets=[500,600,1500]
+    coco_eval.params.maxDets = [700,900,1000]
+    #coco_eval.params.iouThrs = np.linspace(.5, 0.8, int(np.round((0.8 - .5) / .05)) + 1, endpoint=True)
+    coco_eval.params.areaRng=[[0,1e5 ** 2],[0,1e5 ** 2],[0,1e5 ** 2],[0,1e5 ** 2]]
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
     pr1 = coco_eval.eval['precision'][0, :, 0, :, 2]
     pr2 = coco_eval.eval['precision'][2, :, 0, :, 2]
     pr3 = coco_eval.eval['precision'][4, :, 0, :, 2]
+    print(pr1,pr1.shape)
     x = np.arange(0.0, 1.01, 0.01)
     plt.switch_backend('agg')
     plt.xlabel('recall')
     plt.ylabel('precision')
     plt.xlim(0, 1.0)
-    plt.ylim(0, 1.01)
+    plt.ylim(0, 1.0)
     plt.grid(True)
-
     plt.plot(x, pr1, 'b-', label='IoU=0.5')
     plt.plot(x, pr2, 'c-', label='IoU=0.6')
     plt.plot(x, pr3, 'y-', label='IoU=0.7')
-    plt.savefig('/data00/UserHome/zwang/pr.png')
+    handles, labels = plt.gca().get_legend_handles_labels()
+    from collections import OrderedDict
+    by_label = OrderedDict(zip(labels, handles))
+    plt.legend(by_label.values(), by_label.keys())
+    plt.savefig('./PR.jpg')

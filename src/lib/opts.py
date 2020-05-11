@@ -9,6 +9,12 @@ import sys
 class opts(object):
   def __init__(self):
     self.parser = argparse.ArgumentParser()
+    # particle picking 
+    self.parser.add_argument('--data', default='', 
+                             help='the path of training data')
+    self.parser.add_argument('--label_type', default='star',
+                             help='star | box | coord | thi')
+    self.parser.add_argument('--split', nargs='+', type=int)
     # basic experiment setting
     self.parser.add_argument('--task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
