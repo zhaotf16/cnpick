@@ -348,14 +348,10 @@ def save_tiff(x, path):
 
 def save_png(x, path, mi=-3, ma=3):
     # byte encode the image
-    im = Image.fromarray(quantize(x, mi=mi, ma=ma))
-    x = np.array(im)
-    im = cv2.merge([x,x,x])
-    #im = cv2.fastNlMeansDenoising(im, None, 10, 7, 11)
-    (x, y, z) = cv2.split(im)
+    x = quantize(x)
     x = cv2.equalizeHist(x)
-    im = cv2.merge([x,x,x])
-    im = Image.fromarray(im)
+    x = cv2.merge([x, x, x])
+    im = Image.fromarray(x)
     #im = enhance(im)
     im.save(path, 'png')
 
