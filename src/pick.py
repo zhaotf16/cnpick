@@ -25,15 +25,15 @@ def pick(opt):
   Detector = detector_factory[opt.task]
   detector = Detector(opt)
 
-  if os.path.isdir(opt.demo):
+  if os.path.isdir(opt.input):
     image_names = []
-    ls = os.listdir(opt.demo)
+    ls = os.listdir(opt.input)
     for file_name in sorted(ls):
         ext = file_name[file_name.rfind('.') + 1:].lower()
         if ext in image_ext:
-            image_names.append(os.path.join(opt.demo, file_name))
+            image_names.append(os.path.join(opt.input, file_name))
   else:
-    image_names = [opt.demo]
+    image_names = [opt.input]
   #visual_path = os.path.join(opt.demo, 'visual_1024/')
   #if not os.path.exists(visual_path):
   #  os.makedirs(visual_path)
