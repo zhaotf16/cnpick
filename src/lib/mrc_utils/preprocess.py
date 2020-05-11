@@ -1,10 +1,10 @@
 import os
 import numpy as np
 
-import mrc_utils.box
-import mrc_utils.coord
-import mrc_utils.mrc
-import mrc_utils.star
+import mrc_utils.box as box
+import mrc_utils.coord as coord
+import mrc_utils.mrc as mrc
+import mrc_utils.star as star
 
 
 from absl import app
