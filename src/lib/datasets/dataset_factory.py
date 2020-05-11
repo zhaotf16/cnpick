@@ -32,7 +32,7 @@ dataset_factory = {
   'TrpV1_512': TRPV1_512,
   'GspDvc_1024': GSPDVC_1024,
   'TrpV1_1024': TRPV1_1024,
-  'particle': PARTICLE,
+  'particle': Particle,
   'Pand17and89': Pand17and89,
   'Pand17and89and57': Pand17and89and57
 }

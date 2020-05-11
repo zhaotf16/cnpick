@@ -9,7 +9,7 @@ import json
 import os
 import matplotlib.pyplot as plt
 import torch.utils.data as data
-class Pand17and89(data.Dataset):
+class Particle(data.Dataset):
   num_classes = 1
   default_resolution = [1024, 1024]
   mean = np.array([ 0.507675,0.507675,0.507675],
