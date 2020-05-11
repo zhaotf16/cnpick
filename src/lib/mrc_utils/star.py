@@ -82,7 +82,7 @@ def write_star(inputs, dst):
                 f.write("%d.0\t%d.0\t-999\t-999.0\t-999.0\n"%(item[0], item[1]))
             f.write('\n')
 
-def star2coco(data, root_path, json_name):
+def star2coco(data, root_path, box_size, json_name):
     
     images, categories, annotations = [], [], []
     
@@ -117,7 +117,7 @@ def star2coco(data, root_path, json_name):
             image_id : image_id
             """
             category_id = category_dict["Particle"]
-            w, h = 19, 19
+            w, h = box_size, box_size
             x1 = max(coord[0] - w/2, 1)
             y1 = max(coord[1] - h/2, 1)
             x2 = min(coord[0] + w/2, width)

@@ -1,4 +1,5 @@
 import os
+import cv2
 import numpy as np
 
 import mrc_utils.box as box
@@ -126,13 +127,14 @@ def process(opt):
         os.makedirs(image_path)
     for m in mrc_data:
         mrc.save_image(m.data, os.path.join(image_path, m.name), f='png', verbose=True)
-    num_train = 40
-    num_val = 10
-    num_test = 10
+    if opt.split == None:
+        num_train = 40
+        num_val = 10
+        num_test = 10
     train = downsampled_label[0:num_train]
     val = downsampled_label[num_train:num_train+num_val]
     test = downsampled_label[num_train+num_val:num_train+num_val+num_test]
-    star.star2coco(train, image_path)
+    star.star2coco(train, image_path, opt.particle_size, 'train')
     #mrc.write_mrc(mrc_data, dst=data_dst)
     #write_label(downsampled_label, label_type)
     #print('writing label...')
@@ -144,7 +146,7 @@ def get_mean_and_var(filepath):
     r, g, b = 0, 0, 0
     for idx in range(len(dir)):
         filename = dir[idx]
-        img = imread(os.path.join(filepath, filename)) / 255.0
+        img = cv2.imread(os.path.join(filepath, filename)) / 255.0
         r = r + np.sum(img[:, :, 0])
         g = g + np.sum(img[:, :, 1])
         b = b + np.sum(img[:, :, 2])
@@ -157,7 +159,7 @@ def get_mean_and_var(filepath):
     r, g, b = 0, 0, 0
     for i in range(len(dir)):
         filename = dir[i]
-        img = imread(os.path.join(filepath, filename)) / 255.0
+        img = cv2.imread(os.path.join(filepath, filename)) / 255.0
         r = r + np.sum((img[:, :, 0] - r_mean) ** 2)
         g = g + np.sum((img[:, :, 1] - g_mean) ** 2)
         b = b + np.sum((img[:, :, 2] - b_mean) ** 2)
