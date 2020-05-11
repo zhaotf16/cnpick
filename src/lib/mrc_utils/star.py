@@ -32,7 +32,6 @@ def read_star(path):
             if line.startswith('_rln') or not line.split():
                 continue
             content = line.split()
-           
             coordinates.append((int(float(content[x_index])), int(float(content[y_index]))))
             coordinates.sort(key=lambda x: x[0])
     return coordinates

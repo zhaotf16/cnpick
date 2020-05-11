@@ -256,12 +256,11 @@ def downsample_with_factor(x, factor=1, shape=None):
 
 
 class MrcData():
-    def __init__(self, name, header, data, label=None):
+    def __init__(self, name, data, header):
         #info is a tuple:(data, header, extend_header)
         self.name = name
         self.data = data
         self.header = header
-        self.label = label
 
 def quantize(x, mi=-3, ma=3, dtype=np.uint8):
     #if mi is None:

@@ -109,11 +109,11 @@ def process(opt):
             # TODO: load and process label according to STAR or EMAN
             mrc_data.append(data)
     mrc_data.sort(key=lambda m: m.name)
-    
+    print(mrc_data[0].header[0])
     label = read_label(opt.data, opt.label_type)
     #debug:
-    for k in range(len(mrc_data)):
-        print(mrc_data[k].name, '\t', label[k].name)
+    #for k in range(len(mrc_data)):
+    #    print(mrc_data[k].name, '\t', label[k].name)
 
     downsampled_label = label_downsample(
         mrc_data, label, 
@@ -121,11 +121,11 @@ def process(opt):
         opt.target_size, opt.target_size
     )
     print(len(downsampled_label))
-    image_path = os.join(opt.data_dir, opt.exp_id, 'images')
-    if not os.exist(image_path):
-        os.mkdir(image_path)
+    image_path = os.path.join(opt.data_dir, opt.exp_id, 'images')
+    if not os.path.exists(image_path):
+        os.makedirs(image_path)
     for m in mrc_data:
-        mrc.save_image(m.data, os.join(image_path, m.name), f='png', verbose=True)
+        mrc.save_image(m.data, os.path.join(image_path, m.name), f='png', verbose=True)
     num_train = 40
     num_val = 10
     num_test = 10
