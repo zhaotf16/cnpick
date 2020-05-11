@@ -17,7 +17,7 @@ from .dataset.GspDvc_512 import GSPDVC_512
 from .dataset.TrpV1 import TRPV1_512
 from .dataset.GspDvc_1024 import GSPDVC_1024
 from .dataset.TrpV1_1024 import TRPV1_1024
-from .dataset.particle import PARTICLE
+from .dataset.particle import Particle
 from .dataset.Pand17and89 import Pand17and89 
 from .dataset.Pand17and89and57 import Pand17and89and57
 
