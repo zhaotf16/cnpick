@@ -20,7 +20,7 @@ class opts(object):
     # basic experiment setting
     self.parser.add_argument('--task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
-    self.parser.add_argument('--dataset', default='Pand17and89and57',
+    self.parser.add_argument('--dataset', default='particle',
                              help='coco | kitti | coco_hp | pascal'
                               '| proteasome | proteasome_512 | GspDvc_512 | TrpV1_512'
                               '| TrpV1_1024 | GspDvc_1024'

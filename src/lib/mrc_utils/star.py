@@ -90,7 +90,6 @@ def star2coco(data, root_path, box_size, json_name):
     
     for cat_n in category_dict:
         categories.append({"supercategory": "", "id": category_dict[cat_n], "name": cat_n})
-
     img_id = 0
     anno_id_count = 0
     for star in data:
@@ -100,8 +99,9 @@ def star2coco(data, root_path, box_size, json_name):
         img_name = img_name.replace('_DW', '')
         img_name = img_name.replace('_manualpick', '')
         img_name = img_name.replace('_empiar', '')
-        print(img_name)
-        img_cv2 = cv2.imread(root_path + img_name)
+        print(os.path.join(root_path, img_name))
+        img_path = os.path.join(root_path, img_name)
+        img_cv2 = cv2.imread(img_path)
         [height, width, _] = img_cv2.shape
         # images info
         images.append({"file_name": img_name, "height": height, "width": width, "id": img_id})
@@ -118,11 +118,12 @@ def star2coco(data, root_path, box_size, json_name):
             """
             category_id = category_dict["Particle"]
             w, h = box_size, box_size
-            x1 = max(coord[0] - w/2, 1)
-            y1 = max(coord[1] - h/2, 1)
-            x2 = min(coord[0] + w/2, width)
-            y2 = min(coord[1] + h/2, height)
-
+            x1 = float(max(coord[0] - w/2, 1))
+            y1 = float(max(coord[1] - h/2, 1))
+            x2 = float(min(coord[0] + w/2, width))
+            y2 = float(min(coord[1] + h/2, height))
+            w = float(w)
+            h = float(h)
             bbox = [x1, y1, w, h]
             segment = [x1, y1, x2, y1, x2, y2, x1, y2]
             area = w * h

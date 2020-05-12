@@ -81,7 +81,7 @@ def read_label(label_path, label_type):
         print('A valid type is required: star | coord | box')
         return []
 
-def load_and_downsample(path):
+def load_and_downsample(path, target_size):
     with open(path, "rb") as f:
         content = f.read()
     data, header, _ = mrc.parse(content=content)
@@ -94,6 +94,7 @@ def load_and_downsample(path):
             avg_mrc += data[j, ...]
         avg_mrc /= header[2]
         data = avg_mrc
+    data = mrc.downsample_with_size(data, target_size, target_size)
     return mrc.MrcData(name, data, header)
 
 def process(opt):
@@ -106,11 +107,10 @@ def process(opt):
     for file in os.listdir(path):
         if file.endswith('.mrc'):
             print("Loading %s ..." % (file))
-            data = load_and_downsample(os.path.join(path, file))
+            data = load_and_downsample(os.path.join(path, file), opt.particle_size)
             # TODO: load and process label according to STAR or EMAN
             mrc_data.append(data)
     mrc_data.sort(key=lambda m: m.name)
-    print(mrc_data[0].header[0])
     label = read_label(opt.data, opt.label_type)
     #debug:
     #for k in range(len(mrc_data)):
@@ -121,28 +121,41 @@ def process(opt):
         opt.label_type, 
         opt.target_size, opt.target_size
     )
-    print(len(downsampled_label))
     image_path = os.path.join(opt.data_dir, opt.exp_id, 'images')
     if not os.path.exists(image_path):
         os.makedirs(image_path)
     for m in mrc_data:
         mrc.save_image(m.data, os.path.join(image_path, m.name), f='png', verbose=True)
     if opt.split == None:
-        num_train = 40
-        num_val = 10
-        num_test = 10
+        num_train = int(len(mrc_data) * 0.7)
+        num_val = int(len(mrc_data) * 0.2)
+        num_test = int(len(mrc_data) * 0.1)
+    else:
+        num_train = opt.split[0]
+        num_val = opt.split[1]
+        num_test = opt.split[2]
     train = downsampled_label[0:num_train]
+    #train = downsampled_label[0:16]
+    #val = downsampled_label[16:20]
     val = downsampled_label[num_train:num_train+num_val]
     test = downsampled_label[num_train+num_val:num_train+num_val+num_test]
-    star.star2coco(train, image_path, opt.particle_size, 'train')
+    print('Creating COCO annotations')
+    anno_path = os.path.join(opt.data_dir, opt.exp_id, 'annotations')
+    if not os.path.exists(anno_path):
+        os.makedirs(anno_path)
+    
+    star.star2coco(train, image_path, opt.particle_size, os.path.join(anno_path,'train'))
+    star.star2coco(val, image_path, opt.particle_size, os.path.join(anno_path,'val'))
+    star.star2coco(test, image_path, opt.particle_size, os.path.join(anno_path,'test'))
     #mrc.write_mrc(mrc_data, dst=data_dst)
     #write_label(downsampled_label, label_type)
     #print('writing label...')
     #star.write_star(downsampled_label, dst=label_dst)
+    print('Calculating mean and var of this dataset')
     return get_mean_and_var(image_path)
 def get_mean_and_var(filepath):
     dir = os.listdir(filepath)
-    
+    print(filepath)
     r, g, b = 0, 0, 0
     for idx in range(len(dir)):
         filename = dir[idx]
@@ -167,6 +180,12 @@ def get_mean_and_var(filepath):
     r_var = np.sqrt(r / pixels)
     g_var = np.sqrt(g / pixels)
     b_var = np.sqrt(b / pixels)
+    r_mean = np.float32(r_mean)
+    g_mean = np.float32(g_mean)
+    b_mean = np.float32(b_mean)
+    r_var = np.float32(r_var)
+    g_var = np.float32(g_var)
+    b_bar = np.float32(b_var)
     print("r_mean is %f, g_mean is %f, b_mean is %f" % (r_mean, g_mean, b_mean))
     print("r_var is %f, g_var is %f, b_var is %f" % (r_var, g_var, b_var))
     return [r_mean, g_mean, g_mean], [r_var, g_var, b_var]

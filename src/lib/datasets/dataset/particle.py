@@ -17,8 +17,8 @@ class Particle(data.Dataset):
   std  = np.array([0.165826,0.165826,0.165826],
                    dtype=np.float32).reshape(1, 1, 3)
 
-  def __init__(self, opt, split, exp_id):
-    super(Pand17and89, self).__init__()
+  def __init__(self, opt, split):
+    super(Particle, self).__init__()
     self.data_dir = os.path.join(opt.data_dir, opt.exp_id)
     self.img_dir = os.path.join(self.data_dir, 'images')
     if split == 'val':
@@ -61,7 +61,7 @@ class Particle(data.Dataset):
     self.split = split
     self.opt = opt
 
-    print('==> initializing TrpV1 {} data.'.format(split))
+    print('==> initializing {} {} data.'.format(opt.exp_id, split))
     self.coco = coco.COCO(self.annot_path)
     self.images = self.coco.getImgIds()
     self.num_samples = len(self.images)
