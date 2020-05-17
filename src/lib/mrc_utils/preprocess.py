@@ -101,57 +101,56 @@ def process(opt):
     if not os.path.isdir(path):
         print(path, " is not a valid directory")
         return
+    if opt.data_type == 'mrc':
+        mrc_data = []
+        for file in os.listdir(path):
+            if file.endswith('.mrc'):
+                print("Loading %s ..." % (file))
+                data = load_and_downsample(os.path.join(path, file), opt.target_size)
+                # TODO: load and process label according to STAR or EMAN
+                mrc_data.append(data)
+        mrc_data.sort(key=lambda m: m.name)
 
-    mrc_data = []
-    for file in os.listdir(path):
-        if file.endswith('.mrc'):
-            print("Loading %s ..." % (file))
-            data = load_and_downsample(os.path.join(path, file), opt.target_size)
-            # TODO: load and process label according to STAR or EMAN
-            mrc_data.append(data)
-    mrc_data.sort(key=lambda m: m.name)
+        label = read_label(opt.data, opt.label_type)
+        #debug:
+        #for k in range(len(mrc_data)):
+        #    print(mrc_data[k].name, '\t', label[k].name)
 
-    label = read_label(opt.data, opt.label_type)
-    #debug:
-    #for k in range(len(mrc_data)):
-    #    print(mrc_data[k].name, '\t', label[k].name)
-
-    downsampled_label = label_downsample(
-        mrc_data, label, 
-        opt.label_type, 
-        opt.target_size, opt.target_size
-    )
-    image_path = os.path.join(opt.data_dir, opt.exp_id, 'images')
-    if not os.path.exists(image_path):
-        os.makedirs(image_path)
-    for m in mrc_data:
-        mrc.save_image(m.data, os.path.join(image_path, m.name), f='png', verbose=True)
-    
-    if opt.split == None:
-        num_train = int(len(mrc_data) * 0.7)
-        num_val = int(len(mrc_data) * 0.2)
-        num_test = int(len(mrc_data) * 0.1)
-    else:
-        num_train = opt.split[0]
-        num_val = opt.split[1]
-        num_test = opt.split[2]
-    train = downsampled_label[0:num_train]
-    #train = downsampled_label[0:16]
-    #val = downsampled_label[16:20]
-    val = downsampled_label[num_train:num_train+num_val]
-    test = downsampled_label[num_train+num_val:num_train+num_val+num_test]
-    print('Creating COCO annotations')
-    anno_path = os.path.join(opt.data_dir, opt.exp_id, 'annotations')
-    if not os.path.exists(anno_path):
-        os.makedirs(anno_path)
-    
-    star.star2coco(train, image_path, opt.particle_size, os.path.join(anno_path,'train'))
-    star.star2coco(val, image_path, opt.particle_size, os.path.join(anno_path,'val'))
-    star.star2coco(test, image_path, opt.particle_size, os.path.join(anno_path,'test'))
-    #mrc.write_mrc(mrc_data, dst=data_dst)
-    #write_label(downsampled_label, label_type)
-    #print('writing label...')
-    #star.write_star(downsampled_label, dst=label_dst)
+        downsampled_label = label_downsample(
+            mrc_data, label, 
+            opt.label_type, 
+            opt.target_size, opt.target_size
+        )
+        image_path = os.path.join(opt.data_dir, opt.exp_id, 'images')
+        if not os.path.exists(image_path):
+            os.makedirs(image_path)
+        for m in mrc_data:
+            mrc.save_image(m.data, os.path.join(image_path, m.name), f='png', verbose=True)
+        
+        if opt.split == None:
+            num_train = int(len(mrc_data) * 0.7)
+            num_val = int(len(mrc_data) * 0.2)
+            num_test = int(len(mrc_data) * 0.1)
+        else:
+            num_train = opt.split[0]
+            num_val = opt.split[1]
+            num_test = opt.split[2]
+        train = downsampled_label[0:num_train]
+        #train = downsampled_label[0:16]
+        #val = downsampled_label[16:20]
+        val = downsampled_label[num_train:num_train+num_val]
+        test = downsampled_label[num_train+num_val:num_train+num_val+num_test]
+        print('Creating COCO annotations')
+        anno_path = os.path.join(opt.data_dir, opt.exp_id, 'annotations')
+        if not os.path.exists(anno_path):
+            os.makedirs(anno_path)
+        
+        star.star2coco(train, image_path, opt.particle_size, os.path.join(anno_path,'train'))
+        star.star2coco(val, image_path, opt.particle_size, os.path.join(anno_path,'val'))
+        star.star2coco(test, image_path, opt.particle_size, os.path.join(anno_path,'test'))
+    elif opt.data_type == 'png':
+        image_path = os.path.join(opt.data, 'images')
+        anno_path = os.path.join(opt.data, 'annotations')
     print('Calculating mean and var of this dataset')
     return get_mean_and_var(image_path)
 def get_mean_and_var(filepath):

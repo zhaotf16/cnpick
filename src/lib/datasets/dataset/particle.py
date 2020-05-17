@@ -19,8 +19,12 @@ class Particle(data.Dataset):
 
   def __init__(self, opt, split):
     super(Particle, self).__init__()
-    self.data_dir = os.path.join(opt.data_dir, opt.exp_id)
-    self.img_dir = os.path.join(self.data_dir, 'images')
+    if opt.data_type == 'mrc':
+      self.data_dir = os.path.join(opt.data_dir, opt.exp_id)
+      self.img_dir = os.path.join(self.data_dir, 'images')
+    elif opt.data_type == 'png':
+      self.data_dir = opt.data
+      self.img_dir = os.path.join(self.data_dir, 'images')
     if split == 'val':
       self.annot_path = os.path.join(
           self.data_dir, 'annotations', 

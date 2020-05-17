@@ -17,6 +17,7 @@ class opts(object):
     self.parser.add_argument('--split', default=None, nargs='+', type=int)
     self.parser.add_argument('--target_size', default=1024, type=int)
     self.parser.add_argument('--particle_size', default=30, type=int)
+    self.parser.add_argument('--data_type', default='mrc')
     # basic experiment setting
     self.parser.add_argument('--task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
