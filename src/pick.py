@@ -36,7 +36,7 @@ def pick(opt):
   #visual_path = os.path.join(opt.demo, 'visual_1024/')
   #if not os.path.exists(visual_path):
   #  os.makedirs(visual_path)
-  if opts.data_type == 'mrc':
+  if opt.data_type == 'mrc':
     for (image_name) in image_names:
       with open(image_name, "rb") as f:
           content = f.read()
@@ -55,7 +55,7 @@ def pick(opt):
       for stat in time_stats:
         time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
       print(time_str)
-  elif opts.data_type == 'png':
+  elif opt.data_type == 'png':
     for (image_name) in image_names:
       ret = detector.run(image_name, header=None, image_name)
       time_str = ''
