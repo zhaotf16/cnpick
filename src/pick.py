@@ -15,7 +15,7 @@ from mrc_utils.mrc import parse, downsample_with_size, save_image, quantize
 torch.backends.cudnn.enabled = False
 
 #image_ext = ['jpg', 'jpeg', 'png', 'webp', 'mrc']
-image_ext = ['mrc']
+image_ext = ['mrc', 'png']
 time_stats = ['tot', 'load', 'pre', 'net', 'dec', 'post', 'merge']
 
 def pick(opt):
