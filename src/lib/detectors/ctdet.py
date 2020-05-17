@@ -99,9 +99,14 @@ class CtdetDetector(BaseDetector):
           if not self.bbox_valid(bbox, 1024, 25):
             continue
           debugger.add_coco_bbox(bbox[:4], j - 1, bbox[4], img_id='ctdet')
-          thi[name].append(
-            ((bbox[0]+bbox[2])/2 * header[0] / 1024, (bbox[1]+bbox[3])/2 * header[1] / 1024, bbox[4])
-          )
+          if self.opt.data_type == 'mrc':
+            thi[name].append(
+              ((bbox[0]+bbox[2])/2 * header[0] / 1024, (bbox[1]+bbox[3])/2 * header[1] / 1024, bbox[4])
+            )
+          elif self.opt.data_type == 'png':
+            thi[name].append(
+              ((bbox[0]+bbox[2])/2, (bbox[1]+bbox[3])/2, bbox[4])
+            )
           boxes += 1
     #debugger.show_all_imgs(pause=self.pause)
     print(boxes, ' objects picked')
