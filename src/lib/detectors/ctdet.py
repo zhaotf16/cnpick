@@ -87,7 +87,7 @@ class CtdetDetector(BaseDetector):
                                  detection[i, k, 4], 
                                  img_id='out_pred_{:.1f}'.format(scale))
 
-  def show_results(self, debugger, image, results, image_name, header):
+  def show_results(self, debugger, image, results, image_name, header=None):
     debugger.add_img(image, img_id='ctdet')
     name = image_name.split('/')[-1].replace('.png', '')
     thi = {}
