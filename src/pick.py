@@ -57,7 +57,7 @@ def pick(opt):
       print(time_str)
   elif opt.data_type == 'png':
     for (image_name) in image_names:
-      ret = detector.run(image_name, header=None, image_name)
+      ret = detector.run(image_name, None, image_name)
       time_str = ''
       for stat in time_stats:
         time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
