@@ -11,8 +11,7 @@ import numpy as np
 from opts import opts
 from PIL import Image
 from detectors.detector_factory import detector_factory
-from mrc_utils.mrc import parse, downsample_with_size
-from mrc_utils.mrc2png import save_image, quantize
+from mrc_utils.mrc import parse, downsample_with_size, save_image, quantize
 torch.backends.cudnn.enabled = False
 
 #image_ext = ['jpg', 'jpeg', 'png', 'webp', 'mrc']
@@ -25,15 +24,15 @@ def pick(opt):
   Detector = detector_factory[opt.task]
   detector = Detector(opt)
 
-  if os.path.isdir(opt.input):
+  if os.path.isdir(opt.data):
     image_names = []
-    ls = os.listdir(opt.input)
+    ls = os.listdir(opt.data)
     for file_name in sorted(ls):
         ext = file_name[file_name.rfind('.') + 1:].lower()
         if ext in image_ext:
-            image_names.append(os.path.join(opt.input, file_name))
+            image_names.append(os.path.join(opt.data, file_name))
   else:
-    image_names = [opt.input]
+    image_names = [opt.data]
   #visual_path = os.path.join(opt.demo, 'visual_1024/')
   #if not os.path.exists(visual_path):
   #  os.makedirs(visual_path)

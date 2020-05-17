@@ -87,7 +87,6 @@ def load_and_downsample(path, target_size):
     data, header, _ = mrc.parse(content=content)
     name = path.split('/')[-1].split('.')[0]
     #averge frame
-
     if header[2] > 1:
         avg_mrc = np.zeros_like(data, data[0,...])
         for j in range(header[2]):
@@ -107,10 +106,11 @@ def process(opt):
     for file in os.listdir(path):
         if file.endswith('.mrc'):
             print("Loading %s ..." % (file))
-            data = load_and_downsample(os.path.join(path, file), opt.particle_size)
+            data = load_and_downsample(os.path.join(path, file), opt.target_size)
             # TODO: load and process label according to STAR or EMAN
             mrc_data.append(data)
     mrc_data.sort(key=lambda m: m.name)
+
     label = read_label(opt.data, opt.label_type)
     #debug:
     #for k in range(len(mrc_data)):
@@ -126,6 +126,7 @@ def process(opt):
         os.makedirs(image_path)
     for m in mrc_data:
         mrc.save_image(m.data, os.path.join(image_path, m.name), f='png', verbose=True)
+    
     if opt.split == None:
         num_train = int(len(mrc_data) * 0.7)
         num_val = int(len(mrc_data) * 0.2)
@@ -155,7 +156,6 @@ def process(opt):
     return get_mean_and_var(image_path)
 def get_mean_and_var(filepath):
     dir = os.listdir(filepath)
-    print(filepath)
     r, g, b = 0, 0, 0
     for idx in range(len(dir)):
         filename = dir[idx]
