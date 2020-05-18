@@ -67,10 +67,12 @@ class CtdetLoss(torch.nn.Module):
         off_loss += self.crit_reg(output['reg'], batch['reg_mask'],
                              batch['ind'], batch['reg']) / opt.num_stacks
         
-    loss = opt.hm_weight * hm_loss + opt.wh_weight * wh_loss + \
-           opt.off_weight * off_loss
-    loss_stats = {'loss': loss, 'hm_loss': hm_loss,
-                  'wh_loss': wh_loss, 'off_loss': off_loss}
+    #loss = opt.hm_weight * hm_loss + opt.wh_weight * wh_loss + \
+    #       opt.off_weight * off_loss
+    loss = opt.hm_weight * hm_loss + opt.off_weight * off_loss
+    loss_stats = {'loss': loss, 'hm_loss': hm_loss, 'off_loss': off_loss}
+    #loss_stats = {'loss': loss, 'hm_loss': hm_loss,
+    #              'wh_loss': wh_loss, 'off_loss': off_loss}
     return loss, loss_stats
 
 class CtdetTrainer(BaseTrainer):

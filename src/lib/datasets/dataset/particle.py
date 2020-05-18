@@ -135,7 +135,7 @@ class Particle(data.Dataset):
     pr1 = coco_eval.eval['precision'][0, :, 0, :, 2]
     pr2 = coco_eval.eval['precision'][2, :, 0, :, 2]
     pr3 = coco_eval.eval['precision'][4, :, 0, :, 2]
-    print(pr1,pr1.shape)
+    
     x = np.arange(0.0, 1.01, 0.01)
     plt.switch_backend('agg')
     plt.xlabel('recall')
