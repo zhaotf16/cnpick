@@ -48,8 +48,8 @@ def pick(opt):
       data = cv2.equalizeHist(data)
       data = cv2.merge([data, data, data])
       name = image_name.split('/')[-1].replace('.mrc','')
-      thi_name = image_name.split('/')[-1].replace('.mrc','thi')
-      mrc_thi.append((image_name, thi_name))
+      thi_name = image_name.split('/')[-1].replace('.mrc','.thi')
+      mrc_thi.append((image_name[-1], thi_name))
 
       ret = detector.run(data, header, name)
       time_str = ''
