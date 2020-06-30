@@ -37,6 +37,7 @@ def pick(opt):
   #if not os.path.exists(visual_path):
   #  os.makedirs(visual_path)
   if opt.data_type == 'mrc':
+    mrc_thi = []
     for (image_name) in image_names:
       with open(image_name, "rb") as f:
           content = f.read()
@@ -47,12 +48,18 @@ def pick(opt):
       data = cv2.equalizeHist(data)
       data = cv2.merge([data, data, data])
       name = image_name.split('/')[-1].replace('.mrc','')
+      thi_name = image_name.split('/')[-1].replace('.mrc','thi')
+      mrc_thi.append((image_name, thi_name))
 
       ret = detector.run(data, header, name)
       time_str = ''
       for stat in time_stats:
         time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
       print(time_str)
+    with open('merge_results.thi', "w") as f:
+      f.write('[Micrograph Particle coordinate:\n #0:MICROGRAPH_PATH    STRING\n #1:PARTICLE_PATH    STRING]\n')
+      for item in mrc_thi:
+        f.write('@%s\t@%s\n' % (item[0], item[1]))
   elif opt.data_type == 'png':
     for (image_name) in image_names:
       ret = detector.run(image_name, None, image_name)
