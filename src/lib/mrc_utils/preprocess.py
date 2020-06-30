@@ -107,7 +107,6 @@ def process(opt):
             if file.endswith('.mrc'):
                 print("Loading %s ..." % (file))
                 data = load_and_downsample(os.path.join(path, file), opt.target_size)
-                # TODO: load and process label according to STAR or EMAN
                 mrc_data.append(data)
         mrc_data.sort(key=lambda m: m.name)
 

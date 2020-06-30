@@ -47,9 +47,7 @@ def pick(opt):
       data = cv2.equalizeHist(data)
       data = cv2.merge([data, data, data])
       name = image_name.split('/')[-1].replace('.mrc','')
-      #png_name = visual_path + image_name.split('/')[-1].replace('.mrc','')
-      #save_image(data, png_name, f='png', verbose=True)
-      #ret = detector.run(png_name+'.png', header)
+
       ret = detector.run(data, header, name)
       time_str = ''
       for stat in time_stats:
