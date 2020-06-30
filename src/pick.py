@@ -43,7 +43,7 @@ def pick(opt):
           content = f.read()
       data, header, _ = parse(content=content)
       print('downsampling',image_name,'...')
-      data = downsample_with_size(data, 1024, 1024)
+      data = downsample_with_size(data, 1024, data.shape[1]/data.shape[0]*1024)
       data = quantize(data)
       data = cv2.equalizeHist(data)
       data = cv2.merge([data, data, data])

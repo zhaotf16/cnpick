@@ -93,7 +93,7 @@ def load_and_downsample(path, target_size):
             avg_mrc += data[j, ...]
         avg_mrc /= header[2]
         data = avg_mrc
-    data = mrc.downsample_with_size(data, target_size, target_size)
+    data = mrc.downsample_with_size(data, target_size, data.shape[1]/data.shape[0]*1024)
     return mrc.MrcData(name, data, header)
 
 def process(opt):
@@ -109,8 +109,8 @@ def process(opt):
                 data = load_and_downsample(os.path.join(path, file), opt.target_size)
                 mrc_data.append(data)
         mrc_data.sort(key=lambda m: m.name)
-
         label = read_label(opt.data, opt.label_type)
+        
         #debug:
         #for k in range(len(mrc_data)):
         #    print(mrc_data[k].name, '\t', label[k].name)
