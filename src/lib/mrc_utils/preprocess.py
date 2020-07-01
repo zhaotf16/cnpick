@@ -93,7 +93,7 @@ def load_and_downsample(path, target_size):
             avg_mrc += data[j, ...]
         avg_mrc /= header[2]
         data = avg_mrc
-    data = mrc.downsample_with_size(data, target_size, data.shape[1]/data.shape[0]*1024)
+    data = mrc.downsample_with_size(data, target_size, int(data.shape[1]/data.shape[0]*1024))
     return mrc.MrcData(name, data, header)
 
 def process(opt):
