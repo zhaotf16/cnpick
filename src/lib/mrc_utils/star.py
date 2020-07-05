@@ -96,7 +96,7 @@ def star2coco(data, root_path, box_size, json_name):
         #anno_id_count = 0
         img_name = star.name + '.png'
         img_name = img_name.replace('_autopick','')
-        img_name = img_name.replace('_DW', '')
+        #img_name = img_name.replace('_DW', '')
         img_name = img_name.replace('_manualpick', '')
         img_name = img_name.replace('_empiar', '')
         print(os.path.join(root_path, img_name))
