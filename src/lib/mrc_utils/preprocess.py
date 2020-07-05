@@ -118,7 +118,7 @@ def process(opt):
         downsampled_label = label_downsample(
             mrc_data, label, 
             opt.label_type, 
-            opt.target_size, opt.target_size
+            opt.target_size, opt.target_size*mrc_data[0].data.shape[1]/mrc_data[0].data.shape[0]
         )
         image_path = os.path.join(opt.data_dir, opt.exp_id, 'images')
         if not os.path.exists(image_path):
