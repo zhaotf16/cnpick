@@ -100,8 +100,9 @@ class CtdetDetector(BaseDetector):
             continue
           debugger.add_coco_bbox(bbox[:4], j - 1, bbox[4], img_id='ctdet')
           if self.opt.data_type == 'mrc':
+            scale = header[0] / 1024
             thi[name].append(
-              ((bbox[0]+bbox[2])/2 * header[0] / 1024, (bbox[1]+bbox[3])/2 * header[1] / 1024, bbox[4])
+              ((bbox[0]+bbox[2])/2 * scale, (bbox[1]+bbox[3])/2 * scale, (bbox[2]-bbox[0])*scale, (bbox[3]-bbox[1])*scale)
             )
           elif self.opt.data_type == 'png':
             thi[name].append(
